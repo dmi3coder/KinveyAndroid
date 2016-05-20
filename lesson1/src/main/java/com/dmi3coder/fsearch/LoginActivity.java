@@ -14,7 +14,7 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         Client client = new Client.Builder("kid_bkhgi8I2xW",//APP_ID
-                "96c2308ef90b41f3a4ea50f553a0e706",//APP_SECRET
+                "1bac15b6ea3f40e08ec674fd67a83454",//APP_SECRET
                 getApplicationContext()).build();
         client.ping(new KinveyPingCallback() {
             @Override
