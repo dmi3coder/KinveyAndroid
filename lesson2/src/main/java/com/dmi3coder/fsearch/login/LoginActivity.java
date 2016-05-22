@@ -3,30 +3,16 @@ package com.dmi3coder.fsearch.login;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
-import android.app.LoaderManager.LoaderCallbacks;
-import android.content.ContentResolver;
-import android.content.CursorLoader;
-import android.content.Loader;
-import android.database.Cursor;
-import android.net.Uri;
-import android.os.AsyncTask;
-import android.os.Build.VERSION;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
-import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -35,11 +21,6 @@ import com.dmi3coder.fsearch.KinveyActivity;
 import com.dmi3coder.fsearch.R;
 import com.kinvey.java.User;
 import com.kinvey.java.core.KinveyClientCallback;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static android.Manifest.permission.READ_CONTACTS;
 
 /**
  * A login screen that offers login via email/password.
@@ -51,15 +32,16 @@ public class LoginActivity extends KinveyActivity {
     private EditText mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
+    private CheckBox registerCheckBox;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if(getClient().user().isUserLoggedIn()){
+            toMainActivity();
+        }
         setContentView(R.layout.activity_login);
-        // Set up the login form.
-        mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
-
-        mPasswordView = (EditText) findViewById(R.id.password);
+        defineView();
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
@@ -71,6 +53,13 @@ public class LoginActivity extends KinveyActivity {
             }
         });
 
+
+    }
+
+    private void defineView(){
+        mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
+        registerCheckBox = (CheckBox)findViewById(R.id.isRegister);
+        mPasswordView = (EditText) findViewById(R.id.password);
         Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
             @Override
@@ -81,6 +70,11 @@ public class LoginActivity extends KinveyActivity {
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
+    }
+
+    private void toMainActivity() {
+//        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+        getClient().user().logout().execute();
     }
 
 
@@ -123,8 +117,15 @@ public class LoginActivity extends KinveyActivity {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            // TODO: 19/05/16 Implement the login logic
+            checkAction(email,password);
         }
+    }
+
+    private void checkAction(String email, String password) {
+        if(registerCheckBox.isChecked()){
+            signupUser(email,password);
+        }else
+            signinUser(email,password);
     }
 
     private boolean isEmailValid(String email) {
@@ -137,17 +138,20 @@ public class LoginActivity extends KinveyActivity {
         return password.length() > 4;
     }
 
-    private void createUser(String email,String password){
+    private void signupUser(String email, String password){
         getClient().user().create(email,password,callback);
+    }
+
+    private void signinUser(String email, String password){
+        getClient().user().login(email,password,callback);
     }
 
     KinveyClientCallback<User> callback = new KinveyClientCallback<User>() {
 
         @Override
         public void onSuccess(User user) {
-//            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+            toMainActivity();
             Toast.makeText(LoginActivity.this, "Hooray! You're the user!", Toast.LENGTH_SHORT).show();
-            getClient().user().logout();
         }
 
         @Override
