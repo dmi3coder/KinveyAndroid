@@ -6,7 +6,7 @@ import com.kinvey.android.Client;
 
 
 public class MainApplication extends Application {
-    private Client client;
+    private static Client client;
 
     @Override
     public void onCreate() {
@@ -20,7 +20,7 @@ public class MainApplication extends Application {
                 getApplicationContext()).build();
     }
 
-    public Client getClient(){
+    public static Client getClient(){
         return client;
     }
 }

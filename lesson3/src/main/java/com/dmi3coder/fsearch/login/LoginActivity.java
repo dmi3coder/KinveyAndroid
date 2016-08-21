@@ -3,6 +3,7 @@ package com.dmi3coder.fsearch.login;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -19,6 +20,7 @@ import android.widget.Toast;
 
 import com.dmi3coder.fsearch.KinveyActivity;
 import com.dmi3coder.fsearch.R;
+import com.dmi3coder.fsearch.dashboard.MainActivity;
 import com.kinvey.java.User;
 import com.kinvey.java.core.KinveyClientCallback;
 
@@ -71,8 +73,9 @@ public class LoginActivity extends KinveyActivity {
     }
 
     private void toMainActivity() {
-//        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-        getClient().user().logout().execute();
+        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+        startActivity(intent);
+        finish();
     }
 
 
